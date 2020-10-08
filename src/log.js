@@ -783,7 +783,8 @@ export function resetLogConstructorForTesting() {
  *  3. AMP.setLogLevel(D) is called, where D >= 1.
  *
  * @param {!Element=} opt_element
- * @return {!Log}
+ * @return {!L
+ g}
  */
 export function user(opt_element) {
   if (!logs.user) {

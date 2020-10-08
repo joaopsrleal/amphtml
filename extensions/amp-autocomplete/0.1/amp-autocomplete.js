@@ -218,7 +218,7 @@ export class AmpAutocomplete extends AMP.BaseElement {
     * the suggestion container must have a unique ID.
      * In case the autocomplete doesn't have an ID we use a
      * random number to ensure uniqueness.
-     @private {number|string} 
+     @private {number|string}
      */
     this.containerId_ = element.id
       ? element.id
@@ -501,6 +501,12 @@ export class AmpAutocomplete extends AMP.BaseElement {
     this.inputElement_.addEventListener('input', () => {
       this.inputHandler_();
     });
+    this.inputElement_.addEventListener('change', (e) => {
+      console.log('[change]: ', e);
+    });
+    this.inputElement_.addEventListener('input-debounced', (e) => {
+      console.log('[input-debounced]: ', e);
+    });
     this.inputElement_.addEventListener('keydown', (e) => {
       this.keyDownHandler_(e);
     });
@@ -702,9 +708,20 @@ export class AmpAutocomplete extends AMP.BaseElement {
     if (!sourceData.length) {
       return Promise.resolve();
     }
+    debugger;
     const filteredData = this.filterData_(sourceData, input);
+    const dataWithConverter = filteredData.map((item) => {
+      let itemWithConverter = item;
+      // Also render any nested templates.
+      if (typeof item === 'object') {
+        itemWithConverter = {...item, convert: () => JSON.stringify(item)};
+      }
+
+      return itemWithConverter;
+    });
+
     return this.renderResults_(
-      filteredData,
+      dataWithConverter,
       dev().assertElement(this.container_),
       input
     );
@@ -1049,6 +1066,9 @@ export class AmpAutocomplete extends AMP.BaseElement {
 
     const selectedValue =
       element.getAttribute('data-value') || element.textContent || '';
+
+    console.log(typeof selectedValue);
+    debugger;
 
     this.inputElement_.value = this.binding_.getUserInputForUpdateWithSelection(
       selectedValue,

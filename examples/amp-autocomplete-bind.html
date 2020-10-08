@@ -42,7 +42,7 @@
     <h3>amp-autocomplete + amp-bind testing</h3>
     <amp-autocomplete filter="substring">
       <div>
-        <span>Search <input type="text" name="search" id="search" on="input-debounced:AMP.setState({search: event.value});change:AMP.setState({search: event.value})"></span>
+        <span>Search <input type="text" name="search" id="search" on="input-debounced:AMP.setState({search: event.value + 'bounce'});change:AMP.setState({search: event.value + 'change'})"></span>
       </div>
       <script type="application/json">
         {
