@@ -27,24 +27,32 @@ const log = require('fancy-log');
 const path = require('path');
 const {
   travisBuildNumber,
+  travisBuildUrl,
   travisJobNumber,
+  travisJobUrl,
   travisCommitSha,
 } = require('../common/travis');
-const {cyan, green, yellow} = require('ansi-colors');
+const {cyan, green, red, yellow} = require('ansi-colors');
 
 const REPORTING_API_URL = 'https://amp-test-cases.appspot.com/report';
 
 /**
  * Parses a test report file and adds build & job info to it.
  * @param {('unit' | 'integration' | 'e2e')} testType The type of the tests whose result we want to report.
- * @return {Object.<string,Object>} Object containing the build, job, and test results.
+ * @return {Object.<string,Object>|null} Object containing the build, job, and test results.
  */
 async function getReport(testType) {
-  const report = await fs
-    .readFile(`result-reports/${testType}.json`)
-    .then(JSON.parse);
+  try {
+    const report = await fs
+      .readFile(`result-reports/${testType}.json`)
+      .then(JSON.parse);
 
-  return addJobAndBuildInfo(testType, report);
+    return addJobAndBuildInfo(testType, report);
+  } catch (e) {
+    log(red('ERROR:'), 'Error getting test result report.\n', e.toString());
+
+    return null;
+  }
 }
 
 /**
@@ -62,17 +70,19 @@ function addJobAndBuildInfo(testType, reportJson) {
     throw new ReferenceError('Travis fields are not defined.');
   }
 
-  const build = {
-    buildNumber,
-    commitSha,
+  return {
+    results: reportJson,
+    build: {
+      buildNumber,
+      commitSha,
+      url: travisBuildUrl(),
+    },
+    job: {
+      jobNumber,
+      testSuiteType: testType,
+      url: travisJobUrl(),
+    },
   };
-
-  const job = {
-    jobNumber,
-    testSuiteType: testType,
-  };
-
-  return {build, job, results: reportJson};
 }
 
 /**
@@ -81,6 +91,10 @@ function addJobAndBuildInfo(testType, reportJson) {
  */
 async function sendTravisKarmaReport(testType) {
   const body = await getReport(testType);
+
+  if (!body) {
+    return;
+  }
 
   const response = await fetch(REPORTING_API_URL, {
     method: 'post',
