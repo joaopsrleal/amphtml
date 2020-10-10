@@ -218,12 +218,6 @@ exports.jsBundles = {
  */
 exports.extensionBundles = [
   {
-    name: 'amp-hello-world',
-    version: '0.1',
-    latestVersion: '0.1',
-    type: TYPES.MISC,
-  },
-  {
     name: 'amp-3d-gltf',
     version: '0.1',
     latestVersion: '0.1',
