@@ -501,12 +501,6 @@ export class AmpAutocomplete extends AMP.BaseElement {
     this.inputElement_.addEventListener('input', () => {
       this.inputHandler_();
     });
-    this.inputElement_.addEventListener('change', (e) => {
-      console.log('[change]: ', e);
-    });
-    this.inputElement_.addEventListener('input-debounced', (e) => {
-      console.log('[input-debounced]: ', e);
-    });
     this.inputElement_.addEventListener('keydown', (e) => {
       this.keyDownHandler_(e);
     });
@@ -714,11 +708,11 @@ export class AmpAutocomplete extends AMP.BaseElement {
     const filteredData = this.filterData_(sourceData, input);
     const dataWithConverter = filteredData.map((item) => {
       let itemWithConverter = item;
-      // Also render any nested templates.
+      // Add a function that converts the object itself to a JSON string.
+      // This function is then available in mustache templates.
       if (typeof item === 'object') {
         itemWithConverter = {...item, objToJson: () => JSON.stringify(item)};
       }
-
       return itemWithConverter;
     });
 
@@ -1056,14 +1050,14 @@ export class AmpAutocomplete extends AMP.BaseElement {
   }
 
   /**
-   * Writes the selected value into the input field.
+   * Writes the textual representation of the selected value into the input
+   * field.
    * @param {?Element} element
-   * @return {?JsonObject|string} The selected value that should be
    * @private
    */
   setInputValue_(element) {
     if (element === null || element.hasAttribute('data-disabled')) {
-      return null;
+      return;
     }
 
     const selectedValue =
@@ -1075,8 +1069,6 @@ export class AmpAutocomplete extends AMP.BaseElement {
       this.userInput_
     );
     this.userInput_ = this.binding_.getUserInputForUpdate(this.inputElement_);
-
-    return selectedValue;
   }
 
   /**
