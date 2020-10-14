@@ -253,7 +253,7 @@ describes.realWin(
         });
       });
 
-      it('should only clear if data is []', () => {
+      it('should only clear if data is empty', () => {
         return impl.autocomplete_([], 'ap').then(() => {
           expect(clearAllItemsSpy).to.have.been.calledOnce;
           expect(filterDataSpy).not.to.have.been.called;
