@@ -295,12 +295,12 @@ describes.realWin(
           impl.filter_ = 'prefix';
           renderSpy = env.sandbox.spy(impl, 'renderResults_');
         });
-  
+
         it('should resolve when data is []', async () => {
           await impl.filterDataAndRenderResults_([], '');
           expect(renderSpy).not.to.have.been.called;
         });
-  
+
         it('should render data unchanged when input empty', async () => {
           await impl.filterDataAndRenderResults_(['aa', 'bb', 'cc'], '');
           expect(renderSpy).to.have.been.calledWith(
@@ -309,15 +309,19 @@ describes.realWin(
             ''
           );
         });
-  
+
         it("should render data no data when input doesn't match", async () => {
           await impl.filterDataAndRenderResults_(['aa', 'bb', 'cc'], 'd');
           expect(renderSpy).to.have.been.calledWith([], impl.container_, 'd');
         });
-  
+
         it('should filter string data when input provided', async () => {
           await impl.filterDataAndRenderResults_(['aa', 'bb', 'cc'], 'a');
-          expect(renderSpy).to.have.been.calledWith(['aa'], impl.container_, 'a');
+          expect(renderSpy).to.have.been.calledWith(
+            ['aa'],
+            impl.container_,
+            'a'
+          );
         });
       });
 
@@ -331,46 +335,26 @@ describes.realWin(
             .returns(Promise.resolve(getRenderedSuggestions()));
         });
 
-        it('should test case', async () => {
-          const obj1 = {value: 'aa'};
-          await impl.filterDataAndRenderResults_([obj1], '');
-          expect(renderSpy).to.have.been.calledWithMatch(
-            sinon.match((data) => {
-              expect(data).to.have.deep.members([{...obj1, objToJson: () => JSON.stringify(obj1)}]);
-              return true;
-            }, 'checking expectation'),
-            //sinon.match.every(sinon.match.hasOwn('value').and(sinon.match.hasOwn('objToJson', sinon.match.func))),
-            impl.container_,
-            ''
-          );
-        });
-
-        xit('should add objToJson property to objects', async () => {
+        it('should add objToJson property to objects', async () => {
           const obj1 = {value: 'aa', any: 'zz'};
           const obj2 = {value: 'bb', any: 'yy'};
           await impl.filterDataAndRenderResults_([obj1, obj2], '');
-          expect(renderSpy).to.have.been.calledWith(
+          expect(renderSpy).to.have.been.calledWithMatch(
             [
-              {...obj1, objToJson: () => JSON.stringify(obj1)},
-              {...obj2, objToJson: () => JSON.stringify(obj2)},
+              {...obj1, objToJson: env.sandbox.match.func},
+              {...obj2, objToJson: env.sandbox.match.func},
             ],
             impl.container_,
             ''
           );
         });
 
-        xit('should add objToJson property to objects and filter', async () => {
+        it('should add objToJson property to objects and filter', async () => {
           const obj1 = {value: 'aa', any: 'zz'};
           const obj2 = {value: 'bb', any: 'yy'};
-          await impl.filterDataAndRenderResults_(
-            [
-              {value: 'aa', any: 'zz'},
-              {value: 'bb', any: 'yy'},
-            ],
-            ''
-          );
-          expect(renderSpy).to.have.been.calledWith(
-            [{...obj1, objToJson: () => JSON.stringify(obj1)}],
+          await impl.filterDataAndRenderResults_([obj1, obj2], 'a');
+          expect(renderSpy).to.have.been.calledWithMatch(
+            [{...obj1, objToJson: env.sandbox.match.func}],
             impl.container_,
             'a'
           );
