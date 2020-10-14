@@ -920,7 +920,7 @@ describes.realWin(
           expect(impl.inputElement_.value).to.equal('abc');
         });
     });
-    
+
     it('should set input based on data-value and select item from data-json', async () => {
       const selectItemSpy = env.sandbox.spy(impl, 'selectItem_');
       const mockEl = impl.createElementFromItem_('abc');
