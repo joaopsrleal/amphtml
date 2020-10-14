@@ -286,7 +286,7 @@ describes.realWin(
       });
     });
 
-    describe.only('filterDataAndRenderResults_()', () => {
+    describe('filterDataAndRenderResults_()', () => {
       let renderSpy;
 
       describe('with string data', () => {
@@ -919,6 +919,19 @@ describes.realWin(
           expect(selectItemSpy).to.have.been.calledWith('abc');
           expect(impl.inputElement_.value).to.equal('abc');
         });
+    });
+    
+    it('should set input based on data-value and select item from data-json', async () => {
+      const selectItemSpy = env.sandbox.spy(impl, 'selectItem_');
+      const mockEl = impl.createElementFromItem_('abc');
+      const object = {a: 'aa', b: 'bb'};
+      mockEl.setAttribute('data-json', JSON.stringify(object));
+
+      await impl.layoutCallback();
+      await impl.selectHandler_({target: mockEl});
+
+      expect(impl.inputElement_.value).to.equal('abc');
+      expect(selectItemSpy).to.have.been.calledWith(object);
     });
 
     it('should fire events from selectItem_', () => {
