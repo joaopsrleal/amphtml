@@ -310,7 +310,7 @@ describes.realWin(
           );
         });
 
-        it("should render data no data when input doesn't match", async () => {
+        it("should render no data when input doesn't match", async () => {
           await impl.filterDataAndRenderResults_(['aa', 'bb', 'cc'], 'd');
           expect(renderSpy).to.have.been.calledWith([], impl.container_, 'd');
         });
